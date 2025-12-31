@@ -1,3 +1,4 @@
+<img width="1344" height="768" alt="ai-with-web-img2" src="https://github.com/user-attachments/assets/a9e95c89-eaa2-404a-9dcb-f0080e4f2205" />
 
 # 🎙️ Voice UI Web
 
