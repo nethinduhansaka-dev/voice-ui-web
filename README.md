@@ -1,159 +1,78 @@
-<img width="1344" height="768" alt="ai-with-web-img2" src="https://github.com/user-attachments/assets/a9e95c89-eaa2-404a-9dcb-f0080e4f2205" />
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-# 🎙️ Voice UI Web
+## Getting Started
 
-**A universal voice-first AI interaction framework for the modern web.**
+First, run the development server:
 
-Voice UI Web enables users to **navigate and interact with websites using natural speech**, while preserving traditional mouse, touch, and keyboard interactions.
-It is designed as a **foundational layer** for building **AI-native websites**.
-
-
-
-## 🚀 Vision
-
-> Every future website should be usable by simply talking to it.
-
-The web has evolved visually, but interaction has remained largely manual.
-Voice UI Web introduces a **conversational interface layer** that allows AI to understand user intent and control web UI components intelligently.
-
-This is **not a chatbot**.
-This is **AI as a UI controller**.
-
----
-
-## 🧠 Core Concept
-
-```
-User Speech
-   ↓
-Speech-to-Text
-   ↓
-AI Intent Recognition
-   ↓
-Intent → UI Action Mapping
-   ↓
-Website UI Response
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-The AI never directly manipulates the DOM.
-Instead, it produces **structured intents**, which are safely mapped to frontend actions.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
----
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## ✨ Key Features
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-### User Experience
+## Learn More
 
-* Voice-based website navigation
-* Natural language commands
-* Real-time UI updates
-* Hybrid interaction (voice + click + touch)
+To learn more about Next.js, take a look at the following resources:
 
-### Developer Experience
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-* Intent-driven architecture
-* Modular and extensible design
-* Framework-friendly (React first)
-* Safe AI integration (JSON-based intents)
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
----
+## Deploy on Vercel
 
-## 🧩 What Makes This Different?
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-| Traditional Chatbots | Voice UI Web           |
-| -------------------- | ---------------------- |
-| Isolated chat window | Controls the entire UI |
-| Text-based replies   | Voice + UI actions     |
-| Add-on feature       | Core interaction layer |
-| No UI awareness      | Full UI context        |
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
----
+## SiriWaveform usage (dummy audio)
 
-## 🛠️ Reference Tech Stack
+The reusable component lives at `app/components/SiriWaveform.tsx`.
 
-*(Just an idea - May change.)*
+Example: pass dummy “frequency-like” data (0..255) via the `audioData` prop:
 
-* **Frontend:** React / Next.js
-* **Language:** TypeScript
-* **State:** Zustand / Context API
-* **Voice:** Web Speech API / Whisper
-* **AI:** OpenAI / Gemini / Claude
-* **Animation:** Framer Motion
-* **3D Avatar (optional):** Three.js / WebGL
+```tsx
+"use client";
 
----
+import React, { useEffect, useRef, useState } from "react";
+import SiriWaveform from "./components/SiriWaveform";
 
-## 📦 Planned Modules
+export default function SiriWaveformDemo() {
+	const [data, setData] = useState<Uint8Array>(() => new Uint8Array(128));
+	const rafRef = useRef<number | null>(null);
 
-* `voice-engine` – STT & TTS handling
-* `ai-engine` – Intent detection using LLMs
-* `control-layer` – Intent → UI mapping
-* `ui-adapter` – Framework integration
-* `state-layer` – Shared interaction state
+	useEffect(() => {
+		const loop = (t: number) => {
+			const next = new Uint8Array(data.length);
+			for (let i = 0; i < next.length; i++) {
+				const v = Math.sin(t / 600 + i / 6) * 0.5 + 0.5; // 0..1
+				next[i] = Math.floor(v * 255);
+			}
+			setData(next);
+			rafRef.current = requestAnimationFrame(loop);
+		};
 
----
+		rafRef.current = requestAnimationFrame(loop);
+		return () => {
+			if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
-## 🗺️ Roadmap
-
-### Phase 1 – Core
-
-* Voice input/output
-* Intent recognition
-* Page-level navigation
-
-### Phase 2 – UI Control
-
-* Component-level actions
-* Configuration-based integration
-* Developer API
-
-### Phase 3 – Ecosystem
-
-* Plugins & adapters
-* Documentation & examples
-* Community contributions
-
----
-
-## 🌍 Use Cases
-
-* Corporate websites
-* Educational platforms
-* E-commerce
-* Government portals
-* Accessibility-focused systems
-* AI kiosks & displays
-
----
-
-## 🤝 Contributing
-
-This is an **open-source, community-driven project**.
-
-Contributions are welcome from:
-
-* Frontend developers
-* Backend developers
-* AI / NLP engineers
-* UX & HCI researchers
-* Accessibility advocates
-
-> Contribution guidelines coming soon.
-
----
-
-## 📜 License
-
-MIT License — free to use, modify, and distribute.
-
----
-
-## 🔮 Final Note
-
-Voice UI Web is not about replacing the web.
-It’s about **evolving how humans interact with it**.
-
-If you believe the future of the web is conversational —
-**you’re in the right place.**
-
----
+	return (
+		<div className="h-24 w-full">
+			<SiriWaveform audioData={data} />
+		</div>
+	);
+}
+```
